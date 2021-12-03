@@ -1,5 +1,5 @@
-# PHP RFC: Your Title Here
-  * Version: 0.4
+# PHP RFC: User Defined Operator Overloads
+  * Version: 0.5
   * Date: 2021-08-14
   * Author: Jordan LeDoux, jordan.ledoux@gmail.com
   * Status: Under Discussion
