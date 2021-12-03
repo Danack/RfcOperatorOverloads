@@ -21,9 +21,10 @@ function checkDateIsOverOneHourInFuture(DateTimeInterface $date)
 }
 ```
 
-Operator overloading is used by GMP to allow easier to read code:
+Operator overloading is used by GMP to allow easier to read code. These two pieces of code are equivalent:
 
 ```
+// without operator overloading
 $result = gmp_mod(
     gmp_add(
         gmp_mul($c0, gmp_mul($ms0, gmp_invert($ms0, $n0))),
@@ -37,6 +38,7 @@ $result = gmp_mod(
 ```
 
 ```
+// with operator overloading
 $result = (
     $c0 * $ms0 * gmp_invert($ms0, $n0)
   + $c1 * $ms1 * gmp_invert($ms1, $n1)
@@ -46,10 +48,9 @@ $result = (
 
 Even without understanding what the above code does (it's an excerpt from a Coppersmith attack on RSA), it should be obvious that the second code is a lot clearer. It makes the structure of the code immediately clear (three multiplications are summed up and the modulus is taken), whereas the function-based code actively hides any structure in the code. For mathematical operations infix notation just comes a lot more naturally.
 
-
 ## Proposal
 
-This RFC proposes allowing classes written in PHP (aka userland) to implement operator overloading, similar to how it is allowed for classes written in C, for a limited set of operators.
+This RFC proposes allowing classes written in PHP (aka userland) to implement operator overloading, for a limited set of operators, similar to how it is allowed for classes written in C.
 
 ### Add support for operators
 
@@ -113,7 +114,7 @@ This RFC proposes only a subset of the operators in PHP are supported for operat
 
 The list of supported operations and their signatures are:
 
-| Operator | Method Name |
+| Operator | Magic Method Name |
 |---|---|
 | + | __add($other, bool $left) |
 | - | __sub($other, bool $left) |
@@ -149,11 +150,9 @@ class Money
 }
 ```
 
-
 ### Implied operators
 
 Many expressions in PHP can be result to simpler forms.
-
 
 | Operator | Implied As | Method |
 |----------|------------|--------|
@@ -179,7 +178,7 @@ Many expressions in PHP can be result to simpler forms.
 | $a--      | $a = $a - 1 | __sub |
 | -$a       | $a = -1 * $a |  __mul |
 
-
+All those expressions that reduced to implied forms will work, but don't have individual operators.
 
 ### Notable operators
 
@@ -199,21 +198,48 @@ The magic methods for the comparison operators have the additional restriction o
 
 #### Comparison operators aka __compareTo
 
+The __compareTo operator requires an int return rather than mixed:
+
 ```
  function __compareTo(mixed $other): int
 ```
 
-to prevent PHP devs from implementing different comparison logic depending on which side its on. By doing * -1, no matter what the implementation is from the PHP, the >, >=, ==, <=, < comparisons are all guaranteed to be consistent regardless of whether the operand is on the left or right side.
-
-this avoids situations where both $obj1 > 5 and 5 > $obj1 can return true
-
 Any return value larger than 0 will be normalized to 1, and any return value smaller than 0 will be normalized to -1.
+
+The $left argument is omitted as it could only be used for evil e.g. implementing different comparison logic depending on which side its on. Instead of passing $left the engine will multiply the result of the __compareTo call by (-1) where appropriate:
+
+```
+class Number
+{
+    function __construct(readonly int $value) {}
+
+    public function __compareTo(Number|int $other): int
+    {
+        if ($other instanceof Number) {
+            return $this->value - $other->value; // TODO - check right way round
+        }
+
+        return $this->value - $other; // TODO - check right way round
+    }
+}
+
+$obj = new Number(5);
+
+$less_than = ($obj < 5);
+// is equivalent to
+$less_than = $obj->__compareTo(5);
+
+$greater_than = 5 > $obj;
+// is equivalent to
+$greater_than = ($obj->__compareTo(5) * - 1);
+
+```
+
+ By doing * -1, no matter what the implementation is from the PHP, the >, >=, ==, <=, < comparisons are all guaranteed to be consistent regardless of whether the operand is on the left or right side. This avoids situations where both $obj1 > 5 and 5 > $obj1 can return true.
 
 Comparison operators do not throw the InvalidOperator error when unimplemented. Instead, the PHP engine falls back to existing comparison logic in the absence of an override for a given class.
 
-This means that if __equals() is unimplemented but __compareTo() is implemented, the expression $obj == 6 would be evaluated as $obj <=> 6 === 0. As such, for objects which are both equatable and comparable, such as arbitrary precision numbers, it is only necessary to implement __compareTo(). However, for objects that are equatable but not comparable such as complex numbers, both would need an implementation with the __compareTo() explicitly throwing an exception or error. TODO DJA - this sounds suboptimal.
-
-
+This means that if __equals() is unimplemented but __compareTo() is implemented, the expression $obj == 6 would be evaluated as $obj <=> 6 === 0. As such, for objects which are both equatable and comparable, such as arbitrary precision numbers, it is only necessary to implement __compareTo(). However, for objects that are equatable but not comparable such as complex numbers, both would need an implementation with the __compareTo() explicitly throwing an exception or error. TODO DJA - this sounds suboptimal/weird. aka I don't fully grok it.
 
 ### Add InvalidOperatorError
 
@@ -238,7 +264,6 @@ TODO - add Matrix class example
 
 $result = [1, 0, 1] * $matrix
 ```
-
 
 ### Why magic methods and not interfaces?
 
