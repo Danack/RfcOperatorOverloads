@@ -272,14 +272,16 @@ Interfaces wouldn't help write correct code.
 For example, a Vector2d and a Money class could both implement an __addable interface, but using __addable as a type check wouldn't prevent users from attempting to add incompatible objects.
 
 ```
-interface __addable {
+interface __addable
+{
     function __add($other, bool $left): mixed
 }
 
 class Money implements __addable {}
 class Vector implements __addable {}
 
-function processValues(__addable $left, __addable $right) {
+function processValues(__addable $left, __addable $right)
+{
     return $left + $right;
 }
 
@@ -293,7 +295,8 @@ Despite both of the parameters to processValues implementing the _+addable inter
 Instead users are recommended to use specific types:
 
 ```
-function processValues(Money $left, Money $right) {
+function processValues(Money $left, Money $right)
+{
     return $left + $right;
 }
 
