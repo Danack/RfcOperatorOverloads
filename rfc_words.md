@@ -163,7 +163,7 @@ Many expressions in PHP can be result to simpler forms.
 | $a %= $b	| $a = $a % $b | __mod |
 | $a **= $b	| $a = $a ** $b | __pow |
 | $a &= $b	| $a = $a & $b | __bitwiseAnd |
-| $a |= $b	| $a = $a | $b | __bitwiseOr |
+| $a \|= $b	| $a = $a \| $b | __bitwiseOr |
 | $a ^= $b	| $a = $a ^ $b | __bitwiseXor |
 | $a <<= $b	| $a = $a << $b | __bitwiseShiftLeft |
 | $a >>= $b	| $a = $a >> $b | __bitwiseShiftRight |
