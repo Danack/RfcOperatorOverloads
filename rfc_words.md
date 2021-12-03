@@ -114,21 +114,21 @@ This RFC proposes only a subset of the operators in PHP are supported for operat
 
 The list of supported operations and their signatures are:
 
-| Operator | Magic Method Name |
+| Operator | Magic Method |
 |---|---|
-| + | __add($other, bool $left) |
-| - | __sub($other, bool $left) |
-| * | __mul($other, bool $left) |
-| /  | __div($other, bool $left) |
-| %  | __mod($other, bool $left) |
-| &  | __bitwiseAnd($other, bool $left) |
-| \| | __bitwiseOr($other, bool $left) |
-| ^  | __bitwiseXor($other, bool $left) |
-| ~  | __bitwiseNot(); |
-| << | __bitwiseShiftLeft($other, bool $left) |
-| >> | __bitwiseShiftRight($other, bool $left) |
-| ** | __pow($other, bool $left) |
-| == | public function __equals(mixed $other) |
+| + | __add($other, bool $left): mixed |
+| - | __sub($other, bool $left): mixed |
+| * | __mul($other, bool $left): mixed |
+| /  | __div($other, bool $left): mixed |
+| %  | __mod($other, bool $left): mixed |
+| &  | __bitwiseAnd($other, bool $left): mixed |
+| \| | __bitwiseOr($other, bool $left): mixed |
+| ^  | __bitwiseXor($other, bool $left): mixed |
+| ~  | __bitwiseNot(): mixed; |
+| << | __bitwiseShiftLeft($other, bool $left): mixed |
+| >> | __bitwiseShiftRight($other, bool $left): mixed |
+| ** | __pow($other, bool $left): mixed |
+| == | public function __equals(mixed $other): mixed |
 | <=> | public function __compareTo(mixed $other): int |
 
 The magic methods can be implemented with parameter and return types to narrow the type accepted e.g.
@@ -159,8 +159,8 @@ Many expressions in PHP can be result to simpler forms.
 | $a += $b	| $a = $a + $b | __add |
 | $a -= $b	| $a = $a - $b | __sub |
 | $a *= $b	| $a = $a * $b | __mul |
-| $a /= $b	| $a = $a / $b | __div() |
-| $a %= $b	| $a = $a % $b | __mod() |
+| $a /= $b	| $a = $a / $b | __div |
+| $a %= $b	| $a = $a % $b | __mod |
 | $a **= $b	| $a = $a ** $b | __pow |
 | $a &= $b	| $a = $a & $b | __bitwiseAnd |
 | $a |= $b	| $a = $a | $b | __bitwiseOr |
