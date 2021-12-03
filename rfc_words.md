@@ -255,6 +255,25 @@ Currently, this throws a TypeError.
 
 ## F.A.Q.
 
+### Won't operator overloading be misused?
+
+Yes.
+
+It is a common pattern when developers (particularly juniors who have not learnt an appropriate level of fear yet) learn about a new feature, they will use it in ways that more senior/experienced developers would consider as 'bad'.
+
+Most of the argument [against operator overloading](https://james-iry.blogspot.com/2009/03/operator-overloading-ad-absurdum.html) boils down to:
+
+> The problem is abuse. Somebody will name something '+' when it has
+> nothing to do with the common notion of '+'. The resulting confusion
+> is a bigger downside than the benefits of allowing programmers to be
+> flexible in naming.
+
+But this is true of any feature in PHP. People are free to write 'getter' methods that mutate an object state rather than just returning a value.
+
+For all valid names X that evoke a common conception, somebody will name something 'X' when it has nothing to do with the common notion of 'X'.
+
+Language design shouldn't focus on preventing people from doing things you disagree with, at the expense of blocking appropriate usage of a feature.
+
 ### When to use $left
 
 Not all operations are commutative, for example this stunning matrix example:
