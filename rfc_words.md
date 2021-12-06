@@ -46,8 +46,6 @@ $result = (
 ) % ($n0 * $n1 * $n2);
 ```
 
-Even without understanding what the above code does (it's an excerpt from a Coppersmith attack on RSA), it should be obvious that the second code is a lot clearer. It makes the structure of the code immediately clear (three multiplications are summed up and the modulus is taken), whereas the function-based code actively hides any structure in the code. For mathematical operations infix notation just comes a lot more naturally.
-
 Currently it is not possible for operator overloads to be implemented in PHP code.
 
 ## Proposal
